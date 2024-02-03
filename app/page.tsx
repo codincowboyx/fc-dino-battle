@@ -51,9 +51,11 @@ export default async function Page() {
           
           
         </div>
+        <div style={{overflow: "scroll"}}>
 
+        
         <div style={{
-width: 600, height: 400
+width: 750, height: 400, minWidth: 500
         }}>
         <div style={{
                 justifyContent: 'flex-start',
@@ -129,6 +131,7 @@ width: 600, height: 400
                       </div>
                     </div>
                 </div>
+            </div>
             </div>
             </div>
       </main>
