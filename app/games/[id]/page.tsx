@@ -41,10 +41,12 @@ export async function generateMetadata(
 
     const { turn } = game;
 
+    const time = Date.now();
+
     const fcMetadata: Record<string, string> = {
         "fc:frame": "vNext",
-        "fc:frame:post_url": `${url}/api/vote?id=${id}`,
-        "fc:frame:image": `${url}/api/image?id=${id}`,
+        "fc:frame:post_url": `${url}/api/vote?id=${id}&date=${time}`,
+        "fc:frame:image": `${url}/api/image?id=${id}&date=${time}`,
     };
 
     switch (turn) {
@@ -74,7 +76,7 @@ export async function generateMetadata(
         title: id,
         openGraph: {
             title: id,
-            images: [`/api/image?id=${id}`],
+            images: [`/api/image?id=${id}&date${time}`],
         },
         other: {
             ...fcMetadata,

@@ -64,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             const { turn } = game;
             const buttons = [];
-            let postUrl = `<meta name="fc:frame:post_url" content="${process.env['HOST']}/api/vote?id=${game.id}&results=${results ? 'false' : 'true'}">`;
+            let postUrl = `<meta name="fc:frame:post_url" content="${process.env['HOST']}/api/vote?id=${game.id}&results=${results ? 'false' : 'true'}&date=${Date.now()}${ fid > 0 ? `&fid=${fid}` : '' }">`;
 
             switch (turn) {
                 case Turn.PLAYER1:
