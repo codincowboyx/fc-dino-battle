@@ -38,7 +38,6 @@ export async function generateMetadata(
     }
 
     const url = process.env['HOST'] || 'https://dino.degen.today';
-    console.log(url)
 
     const { turn } = game;
 
@@ -86,9 +85,6 @@ export async function generateMetadata(
 
 
 export default async function Page({params}: { params: {id: string}}) {
-    const game = await getGame(params.id);
-    console.log("game", game)
-
     return(
         <>
             <div className="flex flex-col items-center justify-center min-h-screen py-2">
