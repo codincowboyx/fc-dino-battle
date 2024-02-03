@@ -74,6 +74,10 @@ class GameState {
                 turn: Turn.SEEKING_OPPONENT
             }
         } else if (turn === Turn.SEEKING_OPPONENT) {
+            if (fid === game.player1Fid) {
+                throw new Error("can't have same player")
+            }
+
             game = {
                 ...game,
                 player2Fid: fid,

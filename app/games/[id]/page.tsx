@@ -7,9 +7,7 @@ async function getGame(id: string): Promise<IGameState | null> {
     try {
         let gameStr: IGameState | null = await kv.get(id);
 
-        console.log("start")
         console.log(gameStr)
-        console.log("end")
 
         if (!gameStr) {
             return null;
