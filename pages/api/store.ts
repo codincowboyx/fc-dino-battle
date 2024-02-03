@@ -118,7 +118,7 @@ class GameState {
             throw Error("attack or dino invalid")
         }
 
-        const randomMult = Math.random() * (attack.randomMultMax - attack.randomMultMin + 1) + attack.randomMultMin;
+        const randomMult = Math.random() * (attack.randomMultMax - attack.randomMultMin) + attack.randomMultMin;
         const finalPower = randomMult * attack.power;
 
         opponentsDino = {
