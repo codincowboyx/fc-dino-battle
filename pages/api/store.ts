@@ -118,7 +118,7 @@ class GameState {
             throw Error("attack or dino invalid")
         }
 
-        const randomMult = 1;
+        const randomMult = Math.random() * (attack.randomMultMax - attack.randomMultMin + 1) + attack.randomMultMin;
         const finalPower = randomMult * attack.power;
 
         opponentsDino = {
@@ -164,7 +164,7 @@ const dino1: IDino = {
             name: "ice blast",
             power: 50,
             randomMultMax: 2,
-            randomMultMin: 1,
+            randomMultMin: 0.5,
             defense: 0,
             healthBoost: 0,
             skipTurns: 0
@@ -190,7 +190,7 @@ const dino2: IDino = {
             name: "grass blast",
             power: 50,
             randomMultMax: 2,
-            randomMultMin: 1,
+            randomMultMin: 0.5,
             defense: 0,
             healthBoost: 0,
             skipTurns: 0
