@@ -1,6 +1,8 @@
+import { kv } from "@vercel/kv";
 import { v4 } from "uuid";
 
 export enum Turn {
+    SEEKING_PLAYER,
     SEEKING_OPPONENT,
     PLAYER1,
     PLAYER2,
@@ -26,33 +28,72 @@ export interface IDino {
 }
 
 export interface IGameState {
-    player1Fid: string;
+    id: string;
+    player1Fid?: string;
     player2Fid?: string;
     turn: Turn;
-    player1Dino: IDino;
+    created_date: number;
+    player1Dino?: IDino;
     player2Dino?: IDino;
 }
 
 class GameState {
     state: { [key: string]: IGameState } = {};
 
-    startGame(player1Fid: string) {
+    async startGame(created_date: number) {
         const uuid = v4();
 
-        this.state[uuid] = {
-            player1Fid,
-            turn: Turn.SEEKING_OPPONENT,
+        await kv.set(uuid, JSON.stringify({
+            id: uuid,
+            turn: Turn.SEEKING_PLAYER,
             player1Dino: dino1,
             player2Dino: dino2, 
-        }
+            created_date
+        }))
+
+        return uuid;
     }
 
-    play(uuid: string, playFid: string, attackIndex: number) {
-        if (!this.state[uuid] || this.state[uuid].turn === Turn.PLAYER1_WON || this.state[uuid].turn === Turn.PLAYER2_WON) {
+    async getGame(uuid: string): Promise<IGameState | null> {
+        return await kv.get(uuid);
+    }
+
+    async playerJoin(uuid: string, fid: string) {
+        let game = await this.getGame(uuid);
+
+        if (!game || game.turn === Turn.PLAYER1_WON || game.turn === Turn.PLAYER2_WON) {
             throw Error("not a valid game");
         }
 
-        const { player1Fid, player2Fid, turn: currentTurn, player1Dino, player2Dino } = this.state[uuid];
+        const { turn} = game;
+
+        if (turn === Turn.SEEKING_PLAYER) {
+            game = {
+                ...game,
+                player1Fid: fid,
+                turn: Turn.SEEKING_OPPONENT
+            }
+        } else if (turn === Turn.SEEKING_OPPONENT) {
+            game = {
+                ...game,
+                player2Fid: fid,
+                turn: Turn.PLAYER1
+            }
+        }
+
+        await kv.set(uuid, JSON.stringify({ ...game }));
+
+        return game;
+    }
+
+    async play(uuid: string, playFid: string, attackIndex: number) {
+        const game: IGameState | null = await this.getGame(uuid);
+
+        if (!game || game.turn === Turn.PLAYER1_WON || game.turn === Turn.PLAYER2_WON) {
+            throw Error("not a valid game");
+        }
+
+        const { player1Fid, player2Fid, turn: currentTurn, player1Dino, player2Dino } = game;
         const isPlayer1 = player1Fid === playFid;
         const isPlayer2 = player2Fid === playFid;
 
@@ -85,7 +126,7 @@ class GameState {
         let nextTurn = currentTurn === Turn.PLAYER1 ? Turn.PLAYER2 : Turn.PLAYER1;
         let isGameFinished = false;
 
-        if (opponentsDino.health < 0) {
+        if (opponentsDino.health <= 0) {
             if (isPlayer1) {
                 nextTurn = Turn.PLAYER1_WON;
             } else {
@@ -94,18 +135,18 @@ class GameState {
             isGameFinished = true;
         }
 
-        this.state[uuid] = {
-            ...this.state[uuid],
+        await kv.set(uuid, JSON.stringify({
+            ...game,
             player1Dino: isPlayer1 ? playersDino : opponentsDino,
             player2Dino: isPlayer2 ? playersDino : opponentsDino,
             turn: nextTurn
-        }
+        }));
 
-        return isGameFinished;
+        return game;
     }
 
-    getState(uuid: string) {
-        return this.state[uuid];
+    async getState(uuid: string): Promise<IGameState | null> {
+        return await this.getGame(uuid);
     }
 }
 
@@ -161,5 +202,7 @@ const dino2: IDino = {
         }
     ]
 }
+
+export const gameState = new GameState();
 
 export default GameState;

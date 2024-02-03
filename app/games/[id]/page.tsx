@@ -1,19 +1,21 @@
 import {kv} from "@vercel/kv";
-import {Poll} from "@/app/types";
-import {PollVoteForm} from "@/app/form";
 import Head from "next/head";
 import {Metadata, ResolvingMetadata} from "next";
-import { IGameState } from "@/pages/api/store";
+import { IGameState, Turn } from "@/pages/api/store";
 
 async function getGame(id: string): Promise<IGameState | null> {
     try {
-        let game: IGameState | null = await kv.get(`${id}`);
+        let gameStr: IGameState | null = await kv.get(id);
 
-        if (!game) {
+        console.log("start")
+        console.log(gameStr)
+        console.log("end")
+
+        if (!gameStr) {
             return null;
         }
 
-        return game;
+        return gameStr;
     } catch (error) {
         console.error(error);
         return null;
@@ -33,15 +35,21 @@ export async function generateMetadata(
     const id = params.id
     const game = await getGame(id)
 
+    const url = process.env['HOST'] || 'https://dino.degen.today';
+    console.log(url)
+
+    const currentPlayerDino = game?.turn === Turn.PLAYER1 ? game.player1Dino : game?.player2Dino;
+
     const fcMetadata: Record<string, string> = {
         "fc:frame": "vNext",
-        "fc:frame:post_url": `${process.env['HOST']}/api/vote?id=${id}`,
-        "fc:frame:image": `${process.env['HOST']}/api/image?id=${id}`,
+        "fc:frame:post_url": `${url}/api/vote?id=${id}`,
+        "fc:frame:image": `${url}/api/image?id=${id}`,
     };
-    [game.option1, game.option2, game.option3, game.option4].filter(o => o !== "").map((option, index) => {
-        fcMetadata[`fc:frame:button:${index + 1}`] = option;
-    })
-
+    if (currentPlayerDino?.attacks) {
+        currentPlayerDino?.attacks.map((option, index) => {
+            fcMetadata[`fc:frame:button:${index + 1}`] = option.name;
+        })
+    }
 
     return {
         title: id,
@@ -52,19 +60,20 @@ export async function generateMetadata(
         other: {
             ...fcMetadata,
         },
-        metadataBase: new URL(process.env['HOST'] || '')
+        metadataBase: new URL(url)
     }
 }
 
 
 export default async function Page({params}: { params: {id: string}}) {
     const game = await getGame(params.id);
+    console.log("game", game)
 
     return(
         <>
             <div className="flex flex-col items-center justify-center min-h-screen py-2">
                 <main className="flex flex-col items-center justify-center flex-1 px-4 sm:px-20 text-center">
-                    {game?.turn}
+                    Copy this link into warpcast and enjoy!
                 </main>
             </div>
         </>

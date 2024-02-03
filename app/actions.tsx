@@ -4,34 +4,25 @@ import { kv } from "@vercel/kv";
 import { revalidatePath } from "next/cache";
 import {Poll} from "./types";
 import {redirect} from "next/navigation";
+import { gameState } from "@/pages/api/store";
 
-export async function savePoll(poll: Poll, formData: FormData) {
-  let newPoll = {
-    ...poll,
-    created_at: Date.now(),
-    title: formData.get("title") as string,
-    option1: formData.get("option1") as string,
-    option2: formData.get("option2") as string,
-    option3: formData.get("option3") as string,
-    option4: formData.get("option4") as string,
-  }
-  await kv.hset(`poll:${poll.id}`, poll);
-  await kv.zadd("polls_by_date", {
-    score: Number(poll.created_at),
-    member: newPoll.id,
+export async function saveGame() {
+  const time = new Date().getTime();
+  const id = await gameState.startGame(time);
+  await kv.zadd("games_by_date", {
+    score: Number(time),
+    member: id
   });
 
-  revalidatePath("/polls");
-  redirect(`/polls/${poll.id}`);
+  revalidatePath("/games");
+  redirect(`/games/${id}`);
 }
 
 export async function votePoll(poll: Poll, optionIndex: number) {
-  await kv.hincrby(`poll:${poll.id}`, `votes${optionIndex}`, 1);
-
-  revalidatePath(`/polls/${poll.id}`);
-  redirect(`/polls/${poll.id}?results=true`);
+  revalidatePath(`/games/${poll.id}`);
+  redirect(`/games/${poll.id}?results=true`);
 }
 
-export async function redirectToPolls() {
-  redirect("/polls");
+export async function redirectToGames() {
+  redirect("/games");
 }

@@ -1,8 +1,8 @@
-import {PollCreateForm} from "./form";
+import { saveGame } from "./actions";
 
 export let metadata = {
-  title: "Farcaster polls",
-  description: "Poll example for farcaster",
+  title: "Dino Battles",
+  description: "Dino battles",
 };
 
 function VercelLogo(props: React.SVGProps<SVGSVGElement>) {
@@ -27,6 +27,12 @@ function VercelLogo(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export default async function Page() {
+
+  const handleMakeGame = async () => {
+    "use server";
+    await saveGame();
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <main className="flex flex-col items-center justify-center flex-1 px-4 sm:px-20 text-center">
@@ -34,13 +40,18 @@ export default async function Page() {
           <VercelLogo className="h-8 sm:h-16 invert p-3 mb-1" />
         </div>
         <h1 className="text-lg sm:text-2xl font-bold mb-2">
-          Farcaster Polls
+          Dino Battles
         </h1>
         <h2 className="text-md sm:text-xl mx-4">
-          Create a new poll with upto 4 options
+          Create a new dino battle
         </h2>
         <div className="flex flex-wrap items-center justify-around max-w-4xl my-8 sm:w-full bg-white rounded-md shadow-xl h-full border border-gray-100">
-          {/* <PollCreateForm /> */}
+          <form action={handleMakeGame}>
+            <button type="submit">
+              Create Game
+            </button>
+          </form>
+          
           
         </div>
 
@@ -87,6 +98,9 @@ width: 600, height: 400
                       </div>
                     </div>
                     <img src="https://tinydinos.org/transparent/6600.png" width="180" height="180" style={{  transform: "scaleX(-1)"}}/>
+                </div>
+                <div style={{position: "absolute", display: "flex", justifyContent: "center", width: "100%"}}>
+                  
                 </div>
                 <div style={{
                     display: 'flex',
