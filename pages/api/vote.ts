@@ -80,7 +80,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     } else if (otherPlayer === fid.toString()) {
                         buttons.push(`<meta name="fc:frame:button:1" content="Waiting on other player">`)
                     } else {
-                        buttons.push(`<meta name="fc:frame:button:1" content="Start new game">`);
+                        buttons.push(`<meta name="fc:frame:button:1" content="Not a player...Start new game">`);
                         postUrl = `<meta name="fc:frame:post_url" content="${process.env['HOST']}/api/redirect"><meta name="fc:frame:button:1:action" content="post_redirect">`;
                     }
                 }

@@ -35,20 +35,42 @@ export async function generateMetadata(
     const id = params.id
     const game = await getGame(id)
 
+    if (!game) {
+        return {}
+    }
+
     const url = process.env['HOST'] || 'https://dino.degen.today';
     console.log(url)
 
-    const currentPlayerDino = game?.turn === Turn.PLAYER1 ? game.player1Dino : game?.player2Dino;
+    const { turn } = game;
 
     const fcMetadata: Record<string, string> = {
         "fc:frame": "vNext",
         "fc:frame:post_url": `${url}/api/vote?id=${id}`,
         "fc:frame:image": `${url}/api/image?id=${id}`,
     };
-    if (currentPlayerDino?.attacks) {
-        currentPlayerDino?.attacks.map((option, index) => {
-            fcMetadata[`fc:frame:button:${index + 1}`] = option.name;
-        })
+
+    switch (turn) {
+        case Turn.PLAYER1:
+        case Turn.PLAYER2: {
+            const currentPlayerDino = game?.turn === Turn.PLAYER1 ? game.player1Dino : game?.player2Dino;
+
+            if (currentPlayerDino?.attacks) {
+                currentPlayerDino?.attacks.map((option, index) => {
+                    fcMetadata[`fc:frame:button:${index + 1}`] = option.name;
+                })
+            }
+        }
+        break;
+        case Turn.SEEKING_OPPONENT:
+        case Turn.SEEKING_PLAYER:
+            fcMetadata[`fc:frame:button:1`] = "Join Up!";
+        break;
+        default:
+            fcMetadata[`fc:frame:button:1`] = "Start new game";
+            fcMetadata[`fc:frame:post_url`] = `${process.env['HOST']}/api/redirect`;
+            fcMetadata[`fc:frame:button:1:action`] = `post_redirect`;
+
     }
 
     return {
