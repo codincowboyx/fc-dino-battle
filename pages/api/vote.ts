@@ -48,12 +48,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             
             const fid = validatedMessage?.data?.fid || 0;
             
-            if (buttonId >= 0 && buttonId < 5 && !results && game) {
-                if (game.turn === Turn.SEEKING_OPPONENT || game.turn === Turn.SEEKING_PLAYER) {
-                    game = await gameState.playerJoin(gameId, fid.toString())
-                } else if (game.turn === Turn.PLAYER1 || game.turn === Turn.PLAYER2) {
-                    game = await gameState.play(gameId, fid.toString(), buttonId)
-                }
+            try {
+                if (buttonId >= 0 && buttonId < 5 && !results && game) {
+                    if (game.turn === Turn.SEEKING_OPPONENT || game.turn === Turn.SEEKING_PLAYER) {
+                        game = await gameState.playerJoin(gameId, fid.toString())
+                    } else if (game.turn === Turn.PLAYER1 || game.turn === Turn.PLAYER2) {
+                        game = await gameState.play(gameId, fid.toString(), buttonId)
+                    }
+                } 
+            }
+            catch (error) {
+                console.error(error);
+                // ignore and continue to show current state
+                game = await kv.get(`${gameId}`);
             }
 
             if (!game) {
