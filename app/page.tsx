@@ -36,9 +36,6 @@ export default async function Page() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <main className="flex flex-col items-center justify-center flex-1 px-4 sm:px-20 text-center">
-        <div className="flex justify-center items-center bg-black rounded-full w-16 sm:w-24 h-16 sm:h-24 my-8">
-          <VercelLogo className="h-8 sm:h-16 invert p-3 mb-1" />
-        </div>
         <h1 className="text-lg sm:text-2xl font-bold mb-2">
           Dino Battles
         </h1>
@@ -47,7 +44,7 @@ export default async function Page() {
         </h2>
         <div className="flex flex-wrap items-center justify-around max-w-4xl my-8 sm:w-full bg-white rounded-md shadow-xl h-full border border-gray-100">
           <form action={handleMakeGame}>
-            <button type="submit">
+            <button className="font-bold p-4" type="submit">
               Create Game
             </button>
           </form>
@@ -66,7 +63,7 @@ width: 600, height: 400
                 width: '100%',
                 height: '100%',
                 backgroundColor: 'f4f4f4',
-                padding: 20,
+                padding: 40,
                 lineHeight: 1.2,
                 fontSize: 24,
                 border: "2px solid black"
@@ -97,10 +94,10 @@ width: 600, height: 400
                         <div style={{width: "80%", height: "20px", background: "#0866dc", borderBottomLeftRadius: "50px", borderTopLeftRadius: "50px"}}></div>
                       </div>
                     </div>
-                    <img src="https://tinydinos.org/transparent/6600.png" width="180" height="180" style={{  transform: "scaleX(-1)"}}/>
+                    <img src="https://tinydinos.org/transparent/6600.png" width="160" height="160" style={{  transform: "scaleX(-1)"}}/>
                 </div>
                 <div style={{position: "absolute", display: "flex", justifyContent: "center", width: "100%"}}>
-                  
+
                 </div>
                 <div style={{
                     display: 'flex',
@@ -108,16 +105,16 @@ width: 600, height: 400
                     width: "100%",
                     justifyContent: "space-between",
                     boxSizing: "border-box",
-                    alignItems: "self-end"
                 }}>
-                    <img src="https://tinydinos.org/transparent/763.png" width="180" height="180"/>
+                    <img src="https://tinydinos.org/transparent/763.png" width="160" height="160"/>
                     <div style={{
                       borderRight: "2px solid black",
                       borderTop: "2px solid black",
                       display: 'flex',
                       flexDirection: "row",
-                      height: "50%",
-                      padding: "20px 20px"
+                      height: "62px",
+                      padding: "20px",
+                      marginTop: "100px"
                     }}>
 
                       <p style={{height: "20px", lineHeight: "20px", marginRight: "16px"}}>HP: </p>

@@ -109,7 +109,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         width: '100%',
                         height: '100%',
                         backgroundColor: '#f4f4f4',
-                        padding: 20,
+                        padding: 40,
                         lineHeight: 1.2,
                         fontSize: 24,
                         position: "relative"
@@ -143,7 +143,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                                 <div style={{ display: 'flex',width: player1Health, height: "20px", background: "#0866dc", ...player1HealthBarStyle}}></div>
                               </div>
                             </div>
-                            <img src="https://tinydinos.org/transparent/6600.png" width="180" height="180" style={{  transform: "scaleX(-1)"}}/>
+                            <img src="https://tinydinos.org/transparent/6600.png" width="160" height="160" style={{  transform: "scaleX(-1)"}}/>
                         </div>
                         <div style={{position: "absolute", display: "flex", justifyContent: "center", width: "100%"}}>{winnerText}</div>
                         <div style={{
@@ -153,7 +153,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             justifyContent: "space-between",
                             boxSizing: "border-box",
                         }}>
-                            <img src="https://tinydinos.org/transparent/763.png" width="180" height="180"/>
+                            <img src="https://tinydinos.org/transparent/763.png" width="160" height="160"/>
                             <div style={{
                               borderRight: "2px solid black",
                               borderTop: "2px solid black",
