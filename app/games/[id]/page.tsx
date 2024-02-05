@@ -45,32 +45,12 @@ export async function generateMetadata(
 
     const fcMetadata: Record<string, string> = {
         "fc:frame": "vNext",
-        "fc:frame:post_url": `${url}/api/vote?id=${id}&date=${time}`,
+        "fc:frame:post_url": `${url}/api/vote?id=${id}&date=${time}&viewStatus=true`,
         "fc:frame:image": `${url}/api/image?id=${id}&date=${time}`,
+        "fc:frame:button:1": "Start New Game",
+        "fc:frame:button:1:action": "post_redirect",
+        "fc:frame:button:2": "View Status",
     };
-
-    switch (turn) {
-        case Turn.PLAYER1:
-        case Turn.PLAYER2: {
-            const currentPlayerDino = game?.turn === Turn.PLAYER1 ? game.player1Dino : game?.player2Dino;
-
-            if (currentPlayerDino?.attacks) {
-                currentPlayerDino?.attacks.map((option, index) => {
-                    fcMetadata[`fc:frame:button:${index + 1}`] = option.name;
-                })
-            }
-        }
-        break;
-        case Turn.SEEKING_OPPONENT:
-        case Turn.SEEKING_PLAYER:
-            fcMetadata[`fc:frame:button:1`] = "Join Up!";
-        break;
-        default:
-            fcMetadata[`fc:frame:button:1`] = "Start new game";
-            fcMetadata[`fc:frame:post_url`] = `${url}/api/redirect`;
-            fcMetadata[`fc:frame:button:1:action`] = `post_redirect`;
-
-    }
 
     return {
         title: id,

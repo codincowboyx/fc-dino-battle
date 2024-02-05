@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import {kv} from "@vercel/kv";
 import {getSSLHubRpcClient, Message} from "@farcaster/hub-nodejs";
 import { GameStateError, IGameState, Turn, gameState } from './store';
+import { NextResponse } from 'next/server';
 
 const HUB_URL = process.env['HUB_URL'] || "nemes.farcaster.xyz:2283"
 const client = getSSLHubRpcClient(HUB_URL);
@@ -19,7 +20,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // For example, let's assume you receive an option in the body
         try {
             const gameId = req.query['id'] as string;
-            const results = req.query['results'] === 'true'
+            const results = req.query['results'] === 'true';
+            const viewStatus = req.query['viewStatus'] === 'true';
             if (!gameId) {
                 return res.status(400).send('Missing game ID');
             }
@@ -57,18 +59,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             let errorStr = null;
             
             try {
-                if (buttonId >= 0 && buttonId < 5 && !results && game) {
-                    if (game.turn === Turn.SEEKING_OPPONENT || game.turn === Turn.SEEKING_PLAYER) {
-                        game = await gameState.playerJoin(gameId, fid.toString())
-                    } else if (game.turn === Turn.PLAYER1 || game.turn === Turn.PLAYER2) {
-                        game = await gameState.play(gameId, fid.toString(), buttonId)
+                if (!viewStatus) {
+                    if (buttonId >= 0 && buttonId < 5 && !results && game) {
+                        if (game.turn === Turn.SEEKING_OPPONENT || game.turn === Turn.SEEKING_PLAYER) {
+                            game = await gameState.playerJoin(gameId, fid.toString())
+                        } else if (game.turn === Turn.PLAYER1 || game.turn === Turn.PLAYER2) {
+                            game = await gameState.play(gameId, fid.toString(), buttonId)
+                        }
+                    }
+
+                    // yuck, but lets try it...probably a cache thing
+                    await sleep(400);
+                } else {
+                    if (buttonId === 0) {
+                        return NextResponse.redirect(`${URL}/redirect`, {status: 302});
                     }
                 }
                 // if successful force clear the cache...not working
                 // revalidatePath(`games/${gameId}`)
-
-                // yuck, but lets try it...probably a cache thing
-                await sleep(400);
             } catch (error) {
                 console.error(error);
                 // ignore and continue to show current state
