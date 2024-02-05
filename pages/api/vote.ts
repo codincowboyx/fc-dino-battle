@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { revalidatePath } from "next/cache";
 import {kv} from "@vercel/kv";
 import {getSSLHubRpcClient, Message} from "@farcaster/hub-nodejs";
-import { IGameState, Turn, gameState } from './store';
+import { GameStateError, IGameState, Turn, gameState } from './store';
 
 const HUB_URL = process.env['HUB_URL'] || "nemes.farcaster.xyz:2283"
 const client = getSSLHubRpcClient(HUB_URL);
@@ -68,13 +68,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 revalidatePath(`games/${gameId}`)
 
                 // yuck, but lets try it...probably a cache thing
-                await sleep(300);
+                await sleep(400);
             }
             catch (error) {
                 console.error(error);
                 // ignore and continue to show current state
                 game = await kv.get(`${gameId}`);
-                errorStr = error;
+
+                if (error instanceof GameStateError) {
+                    errorStr = error;
+                } else {
+                    errorStr = "Error occured :/"
+                }
             }
 
             if (!game) {

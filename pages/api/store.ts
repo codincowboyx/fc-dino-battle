@@ -37,6 +37,12 @@ export interface IGameState {
     player2Dino?: IDino;
 }
 
+export class GameStateError extends Error {
+    constructor(message = "") {
+      super(message);
+    }
+  }
+
 class GameState {
     state: { [key: string]: IGameState } = {};
 
@@ -62,7 +68,7 @@ class GameState {
         let game = await this.getGame(uuid);
 
         if (!game || game.turn === Turn.PLAYER1_WON || game.turn === Turn.PLAYER2_WON) {
-            throw Error("not a valid game");
+            throw new GameStateError("not a valid game");
         }
 
         const { turn} = game;
@@ -75,7 +81,7 @@ class GameState {
             }
         } else if (turn === Turn.SEEKING_OPPONENT) {
             if (fid === game.player1Fid) {
-                throw new Error("can't have same player")
+                throw new GameStateError("can't have same player")
             }
 
             game = {
@@ -94,7 +100,7 @@ class GameState {
         const game: IGameState | null = await this.getGame(uuid);
 
         if (!game || game.turn === Turn.PLAYER1_WON || game.turn === Turn.PLAYER2_WON) {
-            throw Error("not a valid game");
+            throw new GameStateError("not a valid game");
         }
 
         const { player1Fid, player2Fid, turn: currentTurn, player1Dino, player2Dino } = game;
@@ -102,11 +108,11 @@ class GameState {
         const isPlayer2 = player2Fid === playFid;
 
         if (currentTurn === Turn.PLAYER1 && !isPlayer1) {
-            throw Error("player 1's turn")
+            throw new GameStateError("player 1's turn")
         } 
 
         if (currentTurn === Turn.PLAYER2 && !isPlayer2) {
-            throw Error("player 2's turn")
+            throw new GameStateError("player 2's turn")
         }
 
         const playersDino = isPlayer1 ? player1Dino : player2Dino;
@@ -115,7 +121,7 @@ class GameState {
         let opponentsDino = isPlayer1 ? player2Dino : player1Dino;
 
         if (!attack || !opponentsDino) {
-            throw Error("attack or dino invalid")
+            throw new GameStateError("attack or dino invalid")
         }
 
         const randomMult = Math.random() * (attack.randomMultMax - attack.randomMultMin) + attack.randomMultMin;
