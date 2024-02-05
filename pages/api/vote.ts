@@ -54,7 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const buttonId = (validatedMessage?.data?.frameActionBody?.buttonIndex || 1) - 1;
             
             const fid = validatedMessage?.data?.fid || 0;
-            let isError = false;
+            let errorStr = null;
             
             try {
                 if (buttonId >= 0 && buttonId < 5 && !results && game) {
@@ -74,13 +74,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 console.error(error);
                 // ignore and continue to show current state
                 game = await kv.get(`${gameId}`);
-                isError = true;
+                errorStr = error;
             }
 
             if (!game) {
                 return res.status(400).send('Missing game ID');
             }
-            const imageUrl = `${URL}/api/image?id=${game.id}&results=${results ? 'false': 'true'}&date=${Date.now()}${ fid > 0 ? `&fid=${fid}` : '' }&error=${isError}`;
+            const imageUrl = `${URL}/api/image?id=${game.id}&results=${results ? 'false': 'true'}&date=${Date.now()}${ fid > 0 ? `&fid=${fid}` : '' }${errorStr ? `&error=${errorStr}` : ''}`;
 
 
             const { turn } = game;

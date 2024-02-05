@@ -12,6 +12,7 @@ const gameState = new GameState();
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
         const gameId = req.query['id']
+        const errorStr = req.query['error']
         // const fid = parseInt(req.query['fid']?.toString() || '')
         if (!gameId || Array.isArray(gameId)) {
             return res.status(400).send('Missing game ID');
@@ -35,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 lineHeight: 1.2,
                 fontSize: 24,
             }}>
-                {`Error Occured :/`}
+                {errorStr ? errorStr : `Error Occured :/`}
             </div>
             ,
             {
@@ -48,7 +49,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             });
 
         try {
-            if (game.turn === Turn.SEEKING_OPPONENT || game.turn === Turn.SEEKING_PLAYER) {
+            if (errorStr) {
+                // do nothing for now
+            } else if (game.turn === Turn.SEEKING_OPPONENT || game.turn === Turn.SEEKING_PLAYER) {
                 const text = game.turn === Turn.SEEKING_OPPONENT ? "Looking for challenger. Join Now!" : "Ready Player One? Join Now!";
                 svg = await satori(
                     <div style={{
