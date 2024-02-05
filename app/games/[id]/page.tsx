@@ -37,7 +37,7 @@ export async function generateMetadata(
         return {}
     }
 
-    const url = process.env['HOST'] || 'https://dino.degen.today';
+    const url = 'https://dino.degen.today';
 
     const { turn } = game;
 

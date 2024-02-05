@@ -8,7 +8,7 @@ import { NextResponse } from 'next/server';
 const HUB_URL = process.env['HUB_URL'] || "nemes.farcaster.xyz:2283"
 const client = getSSLHubRpcClient(HUB_URL);
 
-const URL = process.env['HOST'] || 'https://dino.degen.today';
+const URL = 'https://dino.degen.today';
 
 function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
