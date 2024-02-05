@@ -7,6 +7,10 @@ import { IGameState, Turn, gameState } from './store';
 const HUB_URL = process.env['HUB_URL'] || "nemes.farcaster.xyz:2283"
 const client = getSSLHubRpcClient(HUB_URL);
 
+function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
         // Process the game update
@@ -60,6 +64,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
                 // if successful force clear the cache
                 revalidatePath(`games/${gameId}`)
+
+                // yuck, but lets try it...probably a cache thing
+                await sleep(300);
             }
             catch (error) {
                 console.error(error);
