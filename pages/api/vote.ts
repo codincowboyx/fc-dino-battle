@@ -7,6 +7,8 @@ import { IGameState, Turn, gameState } from './store';
 const HUB_URL = process.env['HUB_URL'] || "nemes.farcaster.xyz:2283"
 const client = getSSLHubRpcClient(HUB_URL);
 
+const URL = process.env['HOST'] || 'https://dino.degen.today';
+
 function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -78,12 +80,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             if (!game) {
                 return res.status(400).send('Missing game ID');
             }
-            const imageUrl = `${process.env['HOST']}/api/image?id=${game.id}&results=${results ? 'false': 'true'}&date=${Date.now()}${ fid > 0 ? `&fid=${fid}` : '' }&error=${isError}`;
+            const imageUrl = `${URL}/api/image?id=${game.id}&results=${results ? 'false': 'true'}&date=${Date.now()}${ fid > 0 ? `&fid=${fid}` : '' }&error=${isError}`;
 
 
             const { turn } = game;
             const buttons = [];
-            let postUrl = `<meta name="fc:frame:post_url" content="${process.env['HOST']}/api/vote?id=${game.id}&results=${results ? 'false' : 'true'}&date=${Date.now()}${ fid > 0 ? `&fid=${fid}` : '' }">`;
+            let postUrl = `<meta name="fc:frame:post_url" content="${URL}/api/vote?id=${game.id}&results=${results ? 'false' : 'true'}&date=${Date.now()}${ fid > 0 ? `&fid=${fid}` : '' }">`;
 
             switch (turn) {
                 case Turn.PLAYER1:
@@ -102,7 +104,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         buttons.push(`<meta name="fc:frame:button:1" content="Waiting on other player">`)
                     } else {
                         buttons.push(`<meta name="fc:frame:button:1" content="Not a player...Start new game">`);
-                        postUrl = `<meta name="fc:frame:post_url" content="${process.env['HOST']}/api/redirect"><meta name="fc:frame:button:1:action" content="post_redirect">`;
+                        postUrl = `<meta name="fc:frame:post_url" content="${URL}/api/redirect"><meta name="fc:frame:button:1:action" content="post_redirect">`;
                     }
                 }
                 break;
@@ -112,7 +114,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 break;
                 default:
                     buttons.push(`<meta name="fc:frame:button:1" content="Start new game">`);
-                    postUrl = `<meta name="fc:frame:post_url" content="${process.env['HOST']}/api/redirect"><meta name="fc:frame:button:1:action" content="post_redirect">`;
+                    postUrl = `<meta name="fc:frame:post_url" content="${URL}/api/redirect"><meta name="fc:frame:button:1:action" content="post_redirect">`;
 
             }
 
