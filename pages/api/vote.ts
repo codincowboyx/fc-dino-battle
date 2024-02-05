@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { revalidatePath } from "next/cache";
 import {kv} from "@vercel/kv";
 import {getSSLHubRpcClient, Message} from "@farcaster/hub-nodejs";
 import { IGameState, Turn, gameState } from './store';
@@ -55,7 +56,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     } else if (game.turn === Turn.PLAYER1 || game.turn === Turn.PLAYER2) {
                         game = await gameState.play(gameId, fid.toString(), buttonId)
                     }
-                } 
+                }
+                // if successful force clear the cache
+                revalidatePath(`games/${gameId}`)
             }
             catch (error) {
                 console.error(error);
