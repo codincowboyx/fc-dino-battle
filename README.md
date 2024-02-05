@@ -1,13 +1,19 @@
-# Farcaster Frames Poll app
+# Farcaster Frames Dino Battle App
 
-A example Poll app using [Farcaster Frames](https://warpcast.notion.site/Farcaster-Frames-4bd47fe97dc74a42a48d3a234636d8c5). 
+A dino battle based on the farcaster frames api [Farcaster Frames](https://warpcast.notion.site/Farcaster-Frames-4bd47fe97dc74a42a48d3a234636d8c5). 
 
-This example lets you create a poll and have users vote on it. The FrameAction is authenticated against a hub 
-so the votes cannot be spoofed, and the results are stored in a redis database. 
 
+## Dev
+
+1) make sure to create a @vercel/kv storage option for your project 
+2) download the local .env file from vercel (should be a cmd line tool they provide to do that)
+3) `vercel dev`
 
 ## Demo
 
-- [https://fc-polls.vercel.app/](https://fc-polls.vercel.app/)
+- [https://dino.degen.today](https://dino.degen.today/)
 
+## Gotchas
+
+* caching is a b**** for frames so always add the timestamp to the requests
 
