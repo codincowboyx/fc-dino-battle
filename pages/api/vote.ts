@@ -62,6 +62,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 if (!viewStatus) {
                     if (buttonId >= 0 && buttonId < 5 && !results && game) {
                         if (game.turn === Turn.SEEKING_OPPONENT || game.turn === Turn.SEEKING_PLAYER) {
+                            console.log(`Player ${fid} joining: ${gameId}`);
                             game = await gameState.playerJoin(gameId, fid.toString())
                         } else if (game.turn === Turn.PLAYER1 || game.turn === Turn.PLAYER2) {
                             game = await gameState.play(gameId, fid.toString(), buttonId)
@@ -73,6 +74,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 } else {
                     if (buttonId === 1) {
                         return NextResponse.redirect(`${URL}/redirect`, {status: 302});
+                    } else {
+                        console.log(`Viewing game: ${gameId}`)
                     }
                 }
                 // if successful force clear the cache...not working
