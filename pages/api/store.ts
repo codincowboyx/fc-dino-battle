@@ -163,8 +163,8 @@ const dino1: IDino = {
         {
             name: "ice blast",
             power: 50,
-            randomMultMax: 2,
-            randomMultMin: 0.5,
+            randomMultMax: 1.5,
+            randomMultMin: 0.1,
             defense: 0,
             healthBoost: 0,
             skipTurns: 0
@@ -177,7 +177,16 @@ const dino1: IDino = {
             defense: 100,
             healthBoost: 100,
             skipTurns: 2
-        }
+        },
+        {
+            name: "tackle",
+            power: 20,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 0,
+            healthBoost: 0,
+            skipTurns: 0
+        },
     ]
 }
 
@@ -189,8 +198,8 @@ const dino2: IDino = {
         {
             name: "grass blast",
             power: 50,
-            randomMultMax: 2,
-            randomMultMin: 0.5,
+            randomMultMax: 1.5,
+            randomMultMin: 0.1,
             defense: 0,
             healthBoost: 0,
             skipTurns: 0
@@ -203,7 +212,16 @@ const dino2: IDino = {
             defense: 100,
             healthBoost: 100,
             skipTurns: 2
-        }
+        },
+        {
+            name: "tackle",
+            power: 20,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 0,
+            healthBoost: 0,
+            skipTurns: 0
+        },
     ]
 }
 
