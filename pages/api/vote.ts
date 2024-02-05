@@ -20,7 +20,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // For example, let's assume you receive an option in the body
         try {
             const gameId = req.query['id'] as string;
-            const results = req.query['results'] === 'true';
             const viewStatus = req.query['viewStatus'] === 'true';
             if (!gameId) {
                 return res.status(400).send('Missing game ID');
@@ -60,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             
             try {
                 if (!viewStatus) {
-                    if (buttonId >= 0 && buttonId < 5 && !results && game) {
+                    if (buttonId >= 0 && buttonId < 5 && game) {
                         if (game.turn === Turn.SEEKING_OPPONENT || game.turn === Turn.SEEKING_PLAYER) {
                             console.log(`Player ${fid} joining: ${gameId}`);
                             game = await gameState.playerJoin(gameId, fid.toString())
@@ -70,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     }
 
                     // yuck, but lets try it...probably a cache thing
-                    await sleep(400);
+                    await sleep(300);
                 } else {
                     if (buttonId === 1) {
                         return NextResponse.redirect(`${URL}/redirect`, {status: 302});
@@ -95,12 +94,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             if (!game) {
                 return res.status(400).send('Missing game ID');
             }
-            const imageUrl = `${URL}/api/image?id=${game.id}&results=${results ? 'false': 'true'}&date=${Date.now()}${ fid > 0 ? `&fid=${fid}` : '' }${errorStr ? `&error=${errorStr}` : ''}`;
+            const imageUrl = `${URL}/api/image?id=${game.id}&date=${Date.now()}${ fid > 0 ? `&fid=${fid}` : '' }${errorStr ? `&error=${errorStr}` : ''}`;
 
 
             const { turn } = game;
             const buttons = [];
-            let postUrl = `<meta name="fc:frame:post_url" content="${URL}/api/vote?id=${game.id}&results=${results ? 'false' : 'true'}&date=${Date.now()}${ fid > 0 ? `&fid=${fid}` : '' }">`;
+            let postUrl = `<meta name="fc:frame:post_url" content="${URL}/api/vote?id=${game.id}&date=${Date.now()}${ fid > 0 ? `&fid=${fid}` : '' }">`;
 
             switch (turn) {
                 case Turn.PLAYER1:
