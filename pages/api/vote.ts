@@ -71,7 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     // yuck, but lets try it...probably a cache thing
                     await sleep(400);
                 } else {
-                    if (buttonId === 0) {
+                    if (buttonId === 1) {
                         return NextResponse.redirect(`${URL}/redirect`, {status: 302});
                     }
                 }
