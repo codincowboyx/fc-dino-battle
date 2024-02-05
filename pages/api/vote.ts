@@ -64,19 +64,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         game = await gameState.play(gameId, fid.toString(), buttonId)
                     }
                 }
-                // if successful force clear the cache
-                revalidatePath(`games/${gameId}`)
+                // if successful force clear the cache...not working
+                // revalidatePath(`games/${gameId}`)
 
                 // yuck, but lets try it...probably a cache thing
                 await sleep(400);
-            }
-            catch (error) {
+            } catch (error) {
                 console.error(error);
                 // ignore and continue to show current state
                 game = await kv.get(`${gameId}`);
 
                 if (error instanceof GameStateError) {
-                    errorStr = error;
+                    errorStr = error.message;
                 } else {
                     errorStr = "Error occured :/"
                 }
