@@ -47,9 +47,9 @@ export async function generateMetadata(
         "fc:frame": "vNext",
         "fc:frame:post_url": `${url}/api/vote?id=${id}&date=${time}&viewStatus=true`,
         "fc:frame:image": `${url}/api/image?id=${id}&date=${time}`,
-        "fc:frame:button:1": "Start New Game",
-        "fc:frame:button:1:action": "post_redirect",
-        "fc:frame:button:2": "View Status",
+        "fc:frame:button:2": "Start New Game",
+        "fc:frame:button:2:action": "post_redirect",
+        "fc:frame:button:1": "View Status",
     };
 
     return {
