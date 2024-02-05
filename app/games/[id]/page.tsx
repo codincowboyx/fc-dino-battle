@@ -67,7 +67,7 @@ export async function generateMetadata(
         break;
         default:
             fcMetadata[`fc:frame:button:1`] = "Start new game";
-            fcMetadata[`fc:frame:post_url`] = `${process.env['HOST']}/api/redirect`;
+            fcMetadata[`fc:frame:post_url`] = `${url}/api/redirect`;
             fcMetadata[`fc:frame:button:1:action`] = `post_redirect`;
 
     }

@@ -139,14 +139,16 @@ class GameState {
             isGameFinished = true;
         }
 
-        await kv.set(uuid, JSON.stringify({
+        const newGame = {
             ...game,
             player1Dino: isPlayer1 ? playersDino : opponentsDino,
             player2Dino: isPlayer2 ? playersDino : opponentsDino,
             turn: nextTurn
-        }));
+        }
 
-        return game;
+        await kv.set(uuid, JSON.stringify({...newGame}));
+
+        return newGame;
     }
 
     async getState(uuid: string): Promise<IGameState | null> {
