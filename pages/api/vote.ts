@@ -72,7 +72,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     await sleep(300);
                 } else {
                     if (buttonId === 1) {
-                        return NextResponse.redirect(`${URL}/`, {status: 302});
+                        res.redirect(307, "/");
+                        return;
+                        // return NextResponse.redirect(`${URL}/`, {status: 302});
                     } else {
                         console.log(`Viewing game: ${gameId}`)
                     }
