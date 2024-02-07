@@ -46,8 +46,43 @@ export class GameStateError extends Error {
 class GameState {
     state: { [key: string]: IGameState } = {};
 
-    async startGame(created_date: number) {
+    async getDinoFromId(dinoId: string, defaultDino: IDino): Promise<IDino> {
+        const dinoResponse = await fetch(`https://tinydinos.org/${dinoId}.json`);
+
+        if (dinoResponse) {
+            const dinoJson = await dinoResponse.json();
+            let attacks: Attack[] = [];
+
+            if (dinoJson && dinoJson.attributes) {
+                dinoJson.attributes.forEach((trait: any) => {
+                    if (trait.trait_type === "body") {
+                        attacks.push(traits.body[trait.value])
+                    } else if (trait.trait_type === "chest") {
+                        attacks.push(traits.chest[trait.value])
+                    } else if (trait.trait_type === "eyes") {
+                        attacks.push(traits.eyes[trait.value])
+                    } else if (trait.trait_type === "feet") {
+                        attacks.push(traits.feet[trait.value])
+                    }
+                })
+            }
+
+            return {
+                id: dinoId,
+                defense: 0,
+                health: 100,
+                attacks
+            }
+        }
+
+        return defaultDino;
+    }
+
+    async startGame(created_date: number, dinoId1: string, dinoId2: string) {
         const uuid = v4();
+
+        const dino1 = await this.getDinoFromId(dinoId1, defaultDino1);
+        const dino2 = await this.getDinoFromId(dinoId2, defaultDino2);
 
         await kv.set(uuid, JSON.stringify({
             id: uuid,
@@ -163,7 +198,441 @@ class GameState {
 }
 
 
-const dino1: IDino = {
+const traits: {[key: string]: {[key: string]: Attack}} = {
+    body: {
+        teal: {
+            name: "water gun",
+            power: 60,
+            randomMultMax: 1.2,
+            randomMultMin: 0.3,
+            defense: 0,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        "lime green": {
+            name: "fresh cut",
+            power: 65,
+            randomMultMax: 1.1,
+            randomMultMin: 0.2,
+            defense: 0,
+            healthBoost: 0,
+            skipTurns: 0
+        }, 
+        "light green": {
+            name: "blade runner",
+            power: 70,
+            randomMultMax: 1,
+            randomMultMin: 0.5,
+            defense: 0,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        gray: {
+            name: "tackle",
+            power: 20,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 0,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        green: {
+            name: "grass blast",
+            power: 50,
+            randomMultMax: 1.5,
+            randomMultMin: .1,
+            defense: 0,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        yellow: {
+            name: "sunny day",
+            power: 20,
+            randomMultMax: 5,
+            randomMultMin: .1,
+            defense: 0,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        aqua: {
+            name: "aqua mist",
+            power: 60,
+            randomMultMax: 1,
+            randomMultMin: .5,
+            defense: 0,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        blue: {
+            name: "wave",
+            power: 60,
+            randomMultMax: 1.2,
+            randomMultMin: .4,
+            defense: 0,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        red: {
+            name: "fire spin",
+            power: 20,
+            randomMultMax: 5,
+            randomMultMin: 1,
+            defense: 0,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        purple: {
+            name: "purple nurple",
+            power: 50,
+            randomMultMax: 1,
+            randomMultMin: .8,
+            defense: 0,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        pink: {
+            name: "nail polish",
+            power: 10,
+            randomMultMax: 10,
+            randomMultMin: 1,
+            defense: 0,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        "purple linear gradient": {
+            name: "royal grab",
+            power: 10,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 30,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        "orange linear gradient": {
+            name: "orange squeeze",
+            power: 10,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 30,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        "yellow linear gradient": {
+            name: "lemon squeeze",
+            power: 10,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 30,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        "blue linear gradient": {
+            name: "blueberry pop",
+            power: 10,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 30,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        "pink linear gradient": {
+            name: "pinky poke",
+            power: 10,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 30,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        "green linear gradient": {
+            name: "rad grab",
+            power: 10,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 30,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        "grayspace linear gradient": {
+            name: "thrust",
+            power: 30,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 30,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        rainbow: {
+            name: "rainbow punch",
+            power: 30,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 30,
+            healthBoost: 0,
+            skipTurns: 0
+        }
+    },
+    chest: {
+        orangered: {
+            name: "solidify",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 50,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        "light gray": {
+            name: "rock solid",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 50,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        green: {
+            name: "cacoon",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 50,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        aqua: {
+            name: "water shield",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 50,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        purple: {
+            name: "cacoon",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 50,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        blue: {
+            name: "water shield",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 50,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        pink: {
+            name: "fur coat",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 50,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        "light blue": {
+            name: "water shield",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 50,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        gray: {
+            name: "rock solid",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 50,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        yellow: {
+            name: "sun screen",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 50,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        orange: {
+            name: "solidify",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 50,
+            healthBoost: 0,
+            skipTurns: 0
+        }
+    },
+    eyes: {
+        white: {
+            name: "tackle",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 20,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        "light gray": {
+            name: "tackle",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 20,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        purple: {
+            name: "tackle",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 20,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        yellow: {
+            name: "tackle",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 20,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        blue: {
+            name: "tackle",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 20,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        "dark red": {
+            name: "tackle",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 20,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        "dark gray": {
+            name: "tackle",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 20,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        green: {
+            name: "tackle",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 20,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        orange: {
+            name: "tackle",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 20,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        red: {
+            name: "tackle",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 20,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        "green red": {
+            name: "tackle",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 20,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        "blue yellow": {
+            name: "tackle",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: 1,
+            defense: 20,
+            healthBoost: 0,
+            skipTurns: 0
+        },
+        lazer: {
+            name: "lazer beam",
+            power: 100,
+            randomMultMax: 1,
+            randomMultMin: .1,
+            defense: 0,
+            healthBoost: 0,
+            skipTurns: 0
+        }
+    },
+    feet: {
+        normal: {
+            name: "heal",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: .1,
+            defense: 0,
+            healthBoost: 100,
+            skipTurns: 0
+        },
+        "rocket boots": {
+            name: "heal",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: .1,
+            defense: 0,
+            healthBoost: 100,
+            skipTurns: 0
+        },
+        hoverboard: {
+            name: "heal",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: .1,
+            defense: 0,
+            healthBoost: 100,
+            skipTurns: 0
+        },
+        skateboard: {
+            name: "heal",
+            power: 0,
+            randomMultMax: 1,
+            randomMultMin: .1,
+            defense: 0,
+            healthBoost: 100,
+            skipTurns: 0
+        }
+    }
+}
+
+const defaultDino1: IDino = {
     id: "6600",
     defense: 0,
     health: 100,
@@ -198,7 +667,7 @@ const dino1: IDino = {
     ]
 }
 
-const dino2: IDino = {
+const defaultDino2: IDino = {
     id: "763",
     defense: 0,
     health: 100,

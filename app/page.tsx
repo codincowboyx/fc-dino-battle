@@ -1,3 +1,4 @@
+import { FormEvent } from "react";
 import { saveGame } from "./actions";
 
 export let metadata = {
@@ -28,8 +29,9 @@ function VercelLogo(props: React.SVGProps<SVGSVGElement>) {
 
 export default async function Page() {
 
-  const handleMakeGame = async () => {
+  const handleMakeGame = async (formData: FormData) => {
     "use server";
+    
     await saveGame();
   };
 
@@ -44,6 +46,8 @@ export default async function Page() {
         </h2>
         <div className="flex flex-wrap items-center justify-around max-w-4xl my-8 sm:w-full bg-white rounded-md shadow-xl h-full border border-gray-100">
           <form action={handleMakeGame}>
+            <input type="number" name="dino1Id" />
+            <input type="number" name="dino2Id" />
             <button className="font-bold p-4" type="submit">
               Create Game
             </button>
