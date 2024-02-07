@@ -46,51 +46,58 @@ export class GameStateError extends Error {
 class GameState {
     state: { [key: string]: IGameState } = {};
 
-    async getDinoFromId(dinoId: string, defaultDino: IDino): Promise<IDino> {
-        const dinoResponse = await fetch(`https://tinydinos.org/${dinoId}.json`);
+    async getDinoFromId(dinoId: string | undefined, defaultDino: IDino): Promise<IDino> {
+        if (dinoId) {
+            const dinoResponse = await fetch(`https://tinydinos.org/${dinoId}.json`);
 
-        if (dinoResponse) {
-            const dinoJson = await dinoResponse.json();
-            let attacks: Attack[] = [];
+            if (dinoResponse) {
+                const dinoJson = await dinoResponse.json();
 
-            if (dinoJson && dinoJson.attributes) {
-                dinoJson.attributes.forEach((trait: any) => {
-                    if (trait.trait_type === "body") {
-                        attacks.push(traits.body[trait.value])
-                    } else if (trait.trait_type === "chest") {
-                        attacks.push(traits.chest[trait.value])
-                    } else if (trait.trait_type === "eyes") {
-                        attacks.push(traits.eyes[trait.value])
-                    } else if (trait.trait_type === "feet") {
-                        attacks.push(traits.feet[trait.value])
-                    }
-                })
-            }
+                let attacks: Attack[] = [];
 
-            return {
-                id: dinoId,
-                defense: 0,
-                health: 100,
-                attacks
+                if (dinoJson && dinoJson.attributes) {
+                    dinoJson.attributes.forEach((trait: any) => {
+                        if (trait.trait_type === "body") {
+                            attacks.push(traits.body[trait.value])
+                        } else if (trait.trait_type === "chest") {
+                            attacks.push(traits.chest[trait.value])
+                        } else if (trait.trait_type === "eyes") {
+                            attacks.push(traits.eyes[trait.value])
+                        } else if (trait.trait_type === "feet") {
+                            attacks.push(traits.feet[trait.value])
+                        }
+                    })
+                }
+
+                return {
+                    id: dinoId,
+                    defense: 0,
+                    health: 100,
+                    attacks
+                }
             }
         }
 
         return defaultDino;
     }
 
-    async startGame(created_date: number, dinoId1: string, dinoId2: string) {
+    async startGame(created_date: number, dinoId1?: string, dinoId2?: string) {
         const uuid = v4();
 
         const dino1 = await this.getDinoFromId(dinoId1, defaultDino1);
         const dino2 = await this.getDinoFromId(dinoId2, defaultDino2);
 
-        await kv.set(uuid, JSON.stringify({
+        const game = JSON.stringify({
             id: uuid,
             turn: Turn.SEEKING_PLAYER,
             player1Dino: dino1,
             player2Dino: dino2, 
             created_date
-        }))
+        });
+
+        console.log(game)
+
+        await kv.set(uuid, game)
 
         return uuid;
     }
@@ -150,7 +157,7 @@ class GameState {
             throw new GameStateError("player 2's turn")
         }
 
-        const playersDino = isPlayer1 ? player1Dino : player2Dino;
+        let playersDino = isPlayer1 ? player1Dino! : player2Dino!;
         const attack = playersDino?.attacks[attackIndex];
 
         let opponentsDino = isPlayer1 ? player2Dino : player1Dino;
@@ -160,12 +167,28 @@ class GameState {
         }
 
         const randomMult = Math.random() * (attack.randomMultMax - attack.randomMultMin) + attack.randomMultMin;
+
+        // opponent dino affects
         const finalPower = randomMult * attack.power;
+        const tempDefense = Math.floor(opponentsDino.defense - finalPower);
+        const tempHealth = Math.floor((opponentsDino.health + opponentsDino.defense) - finalPower)
 
         opponentsDino = {
             ...opponentsDino,
-            health: opponentsDino.health - finalPower,
-            defense: opponentsDino.defense - finalPower < 0 ? 0 : opponentsDino.defense - finalPower
+            health: tempHealth > 100 ? 100 : tempHealth,
+            defense: tempDefense < 0 ? 0 : tempDefense
+        }
+
+        // players dino affects
+        const defenseAdd = randomMult * attack.defense;
+        const heal = randomMult * attack.healthBoost;
+        const temp1Def = Math.floor(playersDino.defense + defenseAdd);
+        const temp1Health = Math.floor(playersDino.health + heal);
+
+        playersDino = {
+            ...playersDino!,
+            defense: temp1Def > 100 ? 100 : temp1Def,
+            health: temp1Health > 100 ? 100 : temp1Health
         }
 
         let nextTurn = currentTurn === Turn.PLAYER1 ? Turn.PLAYER2 : Turn.PLAYER1;
@@ -649,11 +672,11 @@ const defaultDino1: IDino = {
         {
             name: "solidify",
             power: 0,
-            randomMultMax: 2,
+            randomMultMax: 1,
             randomMultMin: 1,
             defense: 100,
-            healthBoost: 100,
-            skipTurns: 2
+            healthBoost: 0,
+            skipTurns: 0
         },
         {
             name: "tackle",
@@ -684,11 +707,11 @@ const defaultDino2: IDino = {
         {
             name: "cacoon",
             power: 0,
-            randomMultMax: 2,
+            randomMultMax: 1,
             randomMultMin: 1,
             defense: 100,
-            healthBoost: 100,
-            skipTurns: 2
+            healthBoost: 0,
+            skipTurns: 0
         },
         {
             name: "tackle",

@@ -25,32 +25,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(400).send('Missing game ID');
             }
 
-            let validatedMessage : Message | undefined = undefined;
-            try {
-                const frameMessage = Message.decode(Buffer.from(req.body?.trustedData?.messageBytes || '', 'hex'));
-                const result = await client.validateMessage(frameMessage);
+            // let validatedMessage : Message | undefined = undefined;
+            // try {
+            //     const frameMessage = Message.decode(Buffer.from(req.body?.trustedData?.messageBytes || '', 'hex'));
+            //     const result = await client.validateMessage(frameMessage);
                 
-                if (result.isOk() && result.value.valid) {
-                    console.log(result.value.message);
-                    validatedMessage = result.value.message;
-                }
-            } catch (e)  {
-                return res.status(400).send(`Failed to validate message: ${e}`);
-            }
+            //     if (result.isOk() && result.value.valid) {
+            //         console.log(result.value.message);
+            //         validatedMessage = result.value.message;
+            //     }
+            // } catch (e)  {
+            //     return res.status(400).send(`Failed to validate message: ${e}`);
+            // }
 
             let game: IGameState | null = await kv.get(`${gameId}`);
 
             // Uncomment for local testing
             
-            // let validatedMessage : Message | undefined = {
-            //     data: {
-            //         // @ts-ignore
-            //         frameActionBody: {
-            //             buttonIndex: 1
-            //         },
-            //         fid: game?.turn === Turn.PLAYER1 || game?.turn === Turn.SEEKING_PLAYER ? 1234 : 1
-            //     }
-            // };
+            let validatedMessage : Message | undefined = {
+                data: {
+                    // @ts-ignore
+                    frameActionBody: {
+                        buttonIndex: 1
+                    },
+                    fid: game?.turn === Turn.PLAYER1 || game?.turn === Turn.SEEKING_PLAYER ? 1234 : 1
+                }
+            };
 
             const buttonId = (validatedMessage?.data?.frameActionBody?.buttonIndex || 1) - 1;
             
@@ -72,7 +72,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     await sleep(300);
                 } else {
                     if (buttonId === 1) {
-                        return NextResponse.redirect(`${URL}/`, {status: 302});
+                        res.redirect(307, "/");
+                        return;
+                        // return NextResponse.redirect(`${URL}/`, {status: 302});
                     } else {
                         console.log(`Viewing game: ${gameId}`)
                     }

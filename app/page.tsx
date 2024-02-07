@@ -6,33 +6,18 @@ export let metadata = {
   description: "Dino battles",
 };
 
-function VercelLogo(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      aria-label="Vercel Logo"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 19"
-      {...props}
-    >
-      <path
-        clipRule="evenodd"
-        d="M12.04 2L2.082 18H22L12.04 2z"
-        fill="#000"
-        fillRule="evenodd"
-        stroke="#000"
-        strokeWidth="1.5"
-      />
-    </svg>
-  );
-}
+const initialState = {
+  message: ""
+};
 
 export default async function Page() {
-
-  const handleMakeGame = async (formData: FormData) => {
+  const createGame = async (formData: FormData) => {
     "use server";
-    
-    await saveGame();
+
+    const dinoId1 = formData.get("dino1Id") as string | null;
+    const dinoId2 = formData.get("dino2Id") as string | null;
+
+    await saveGame(dinoId1, dinoId2)
   };
 
   return (
@@ -44,15 +29,23 @@ export default async function Page() {
         <h2 className="text-md sm:text-xl mx-4">
           Create a new dino battle
         </h2>
-        <div className="flex flex-wrap items-center justify-around max-w-4xl my-8 sm:w-full bg-white rounded-md shadow-xl h-full border border-gray-100">
-          <form action={handleMakeGame}>
-            <input type="number" name="dino1Id" />
-            <input type="number" name="dino2Id" />
-            <button className="font-bold p-4" type="submit">
+        <div>
+          <form className="flex flex-col flex-wrap items-center justify-around max-w-4xl my-8 sm:w-full" action={createGame}>
+            <div className="my-8">
+              <p className="">Dino 1 Id:</p>
+              <input className="p-2 border border-gray-600" type="number" name="dino1Id" defaultValue="6600"/>
+            </div>
+            <div className="my-8">
+              <p className="">Dino 2 Id:</p>
+              <input className="p-2 border border-gray-600" type="number" name="dino2Id" defaultValue="763"/>
+            </div>
+            <button className="font-bold p-4 bg-white rounded-md shadow-xl h-full border border-gray-100" type="submit">
               Create Game
             </button>
           </form>
-          
+          {/* <p aria-live="polite" className="sr-only" role="status">
+            {state?.message}
+          </p> */}
           
         </div>
         <div style={{overflow: "scroll"}}>
